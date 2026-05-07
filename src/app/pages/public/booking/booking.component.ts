@@ -112,7 +112,10 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 </select>
               </div>
 
-              <input [(ngModel)]="form.travel_date" name="travel_date" type="date" />
+              <div class="date-field">
+                <label>Travel Date</label>
+                <input [(ngModel)]="form.travel_date" name="travel_date" type="date" required />
+              </div>
 
               <div class="select-wrap">
                 <select [(ngModel)]="form.language" name="language" required>
@@ -380,11 +383,31 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       textarea {
         padding: 16px 20px;
+        min-height: 125px;
+        resize: vertical;
       }
 
       input::placeholder,
       textarea::placeholder {
         color: rgba(13, 27, 42, 0.42);
+      }
+
+      .date-field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .date-field label {
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding-inline-start: 4px;
+      }
+
+      .date-field input {
+        height: 58px;
       }
 
       .select-wrap {
@@ -418,11 +441,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       select:focus {
         border-color: #c6a85c;
         box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
-      }
-
-      textarea {
-        min-height: 125px;
-        resize: vertical;
       }
 
       button {
@@ -468,24 +486,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         color: #991b1b;
       }
 
-      :host-context([dir='rtl']) .summary-grid strong {
-        text-align: left;
-      }
-
-      :host-context([dir='rtl']) .back-link:hover {
-        transform: translateX(4px);
-      }
-
-      :host-context([dir='rtl']) .select-wrap::after {
-        right: auto;
-        left: 18px;
-      }
-
-      :host-context([dir='rtl']) select {
-        padding-inline-end: 20px;
-        padding-inline-start: 46px;
-      }
-
       :host-context(body:not(.light-mode)) {
         background: #07111d;
       }
@@ -510,13 +510,9 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       :host-context(body:not(.light-mode)) .summary-body p,
       :host-context(body:not(.light-mode)) .form-head p,
-      :host-context(body:not(.light-mode)) .summary-grid span {
+      :host-context(body:not(.light-mode)) .summary-grid span,
+      :host-context(body:not(.light-mode)) .date-field label {
         color: #ead7b5;
-      }
-
-      :host-context(body:not(.light-mode)) .summary-grid div {
-        background: rgba(255, 255, 255, 0.055);
-        border-color: rgba(198, 168, 92, 0.26);
       }
 
       :host-context(body:not(.light-mode)) input,
@@ -536,11 +532,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         color: #f8f6f1;
       }
 
-      :host-context(body:not(.light-mode)) input::placeholder,
-      :host-context(body:not(.light-mode)) textarea::placeholder {
-        color: rgba(248, 246, 241, 0.5);
-      }
-
       @media (max-width: 992px) {
         .booking-wrap {
           grid-template-columns: 1fr;
@@ -552,12 +543,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
           min-height: 390px;
           padding-top: 112px;
           text-align: center;
-        }
-
-        .booking-hero span,
-        .label,
-        .form-head span {
-          justify-content: center;
         }
 
         .booking-wrap {
@@ -577,7 +562,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         }
 
         input,
-        select {
+        select,
+        .date-field input {
           height: 70px;
           min-height: 70px;
           border-radius: 18px;
@@ -597,14 +583,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         .summary-grid div {
           flex-direction: column;
         }
-
-        .summary-grid strong {
-          text-align: left;
-        }
-
-        :host-context([dir='rtl']) .summary-grid strong {
-          text-align: right;
-        }
       }
 
       @media (max-width: 480px) {
@@ -615,12 +593,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         .trip-summary,
         .booking-form {
           border-radius: 20px;
-        }
-
-        .booking-hero span::before,
-        .label::before,
-        .form-head span::before {
-          width: 22px;
         }
 
         .booking-form {
