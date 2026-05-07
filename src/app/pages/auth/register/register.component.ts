@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
@@ -18,6 +18,14 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         <input [(ngModel)]="email" name="email" type="email" placeholder="Email" required />
         <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
 
+        @if (successMessage) {
+          <div class="success">{{ successMessage }}</div>
+        }
+
+        @if (errorMessage) {
+          <div class="error">{{ errorMessage }}</div>
+        }
+
         <button type="submit" [disabled]="loading">
           {{ loading ? 'Creating...' : 'Register' }}
         </button>
@@ -26,14 +34,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
           Already have an account?
           <a routerLink="/login">Login</a>
         </p>
-
-        @if (successMessage) {
-          <div class="success">{{ successMessage }}</div>
-        }
-
-        @if (errorMessage) {
-          <div class="error">{{ errorMessage }}</div>
-        }
       </form>
     </section>
   `,
@@ -124,7 +124,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 8px;
+    margin-top: 14px;
     cursor: pointer;
     transition: 0.25s ease;
     box-shadow: 0 14px 30px rgba(198, 168, 92, 0.25);
@@ -155,28 +155,24 @@ import { SupabaseService } from '../../../core/services/supabase.service';
     font-weight: 800;
   }
 
-  .switch a:hover {
-    color: #ead7b5;
-  }
-
   .success {
-    margin-top: 14px;
+    margin: 0 0 14px;
     background: #dcfce7;
     color: #166534;
     padding: 13px 14px;
     border-radius: 14px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .error {
-    margin-top: 14px;
-    background: #8b2d2d;
-    color: #fff;
+    margin: 0 0 14px;
+    background: #fee2e2;
+    color: #991b1b;
     padding: 13px 14px;
     border-radius: 14px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   :host-context(body.light-mode) .auth-card {
@@ -208,36 +204,68 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       border-radius: 22px;
     }
   }
-`]
+`],
 })
 export class RegisterComponent {
   fullName = '';
   email = '';
   password = '';
+
   loading = false;
   successMessage = '';
   errorMessage = '';
 
-  constructor(private supabase: SupabaseService) {}
+  constructor(
+    private supabase: SupabaseService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   async register() {
+    if (this.loading) return;
+
     this.successMessage = '';
     this.errorMessage = '';
-    this.loading = true;
 
-    const { error } = await this.supabase.signUp(
-      this.email,
-      this.password,
-      this.fullName
-    );
+    const fullName = this.fullName.trim();
+    const email = this.email.trim().toLowerCase();
+    const password = this.password.trim();
 
-    this.loading = false;
-
-    if (error) {
-      this.errorMessage = error.message;
+    if (!fullName || !email || !password) {
+      this.errorMessage = 'Please fill all required fields.';
       return;
     }
 
-    this.successMessage = 'Account created. Please check your email to confirm your account.';
+    if (password.length < 6) {
+      this.errorMessage = 'Password must be at least 6 characters.';
+      return;
+    }
+
+    this.loading = true;
+    this.cdr.detectChanges();
+
+    try {
+      const { error } = await this.supabase.signUp(email, password, fullName);
+
+      if (error) {
+        this.errorMessage = error.message;
+        return;
+      }
+
+      this.successMessage = 'Account created successfully. You can login now.';
+
+      this.fullName = '';
+      this.email = '';
+      this.password = '';
+
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1200);
+    } catch (err: any) {
+      this.errorMessage = err?.message || 'Something went wrong. Please try again.';
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 }
