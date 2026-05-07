@@ -44,7 +44,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
               </span>
 
               <h2>{{ trip.title }}</h2>
-
               <p>{{ trip.description }}</p>
 
               <div class="summary-grid">
@@ -101,27 +100,31 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [placeholder]="'BOOKING.FORM.PHONE' | translate"
               />
 
-              <select [(ngModel)]="form.country" name="country" required>
-                <option value="" disabled>
-                  {{ 'BOOKING.FORM.COUNTRY' | translate }}
-                </option>
+              <div class="select-wrap">
+                <select [(ngModel)]="form.country" name="country" required>
+                  <option value="" disabled>
+                    {{ 'BOOKING.FORM.COUNTRY' | translate }}
+                  </option>
 
-                @for (country of countries; track country) {
-                  <option [value]="country">{{ country }}</option>
-                }
-              </select>
+                  @for (country of countries; track country) {
+                    <option [value]="country">{{ country }}</option>
+                  }
+                </select>
+              </div>
 
               <input [(ngModel)]="form.travel_date" name="travel_date" type="date" />
 
-              <select [(ngModel)]="form.language" name="language" required>
-                <option value="" disabled>
-                  {{ 'BOOKING.FORM.LANGUAGE' | translate }}
-                </option>
+              <div class="select-wrap">
+                <select [(ngModel)]="form.language" name="language" required>
+                  <option value="" disabled>
+                    {{ 'BOOKING.FORM.LANGUAGE' | translate }}
+                  </option>
 
-                @for (lang of languages; track lang.value) {
-                  <option [value]="lang.label">{{ lang.label }}</option>
-                }
-              </select>
+                  @for (lang of languages; track lang.value) {
+                    <option [value]="lang.label">{{ lang.label }}</option>
+                  }
+                </select>
+              </div>
 
               <input
                 [(ngModel)]="form.adults"
@@ -364,9 +367,10 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       textarea,
       select {
         width: 100%;
+        min-height: 58px;
         border: 1px solid rgba(198, 168, 92, 0.24);
-        border-radius: 16px;
-        padding: 14px 16px;
+        border-radius: 18px;
+        padding: 0 20px;
         outline: none;
         font-size: 14px;
         background: #fff;
@@ -374,9 +378,39 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         transition: 0.25s ease;
       }
 
+      textarea {
+        padding: 16px 20px;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: rgba(13, 27, 42, 0.42);
+      }
+
+      .select-wrap {
+        position: relative;
+        width: 100%;
+      }
+
+      .select-wrap::after {
+        content: '⌄';
+        position: absolute;
+        top: 50%;
+        right: 18px;
+        transform: translateY(-55%);
+        color: #0d1b2a;
+        font-size: 18px;
+        pointer-events: none;
+        line-height: 1;
+      }
+
       select {
+        height: 58px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
         cursor: pointer;
-        appearance: auto;
+        padding-inline-end: 46px;
       }
 
       input:focus,
@@ -442,6 +476,16 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         transform: translateX(4px);
       }
 
+      :host-context([dir='rtl']) .select-wrap::after {
+        right: auto;
+        left: 18px;
+      }
+
+      :host-context([dir='rtl']) select {
+        padding-inline-end: 20px;
+        padding-inline-start: 46px;
+      }
+
       :host-context(body:not(.light-mode)) {
         background: #07111d;
       }
@@ -483,6 +527,10 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         border-color: rgba(198, 168, 92, 0.28);
       }
 
+      :host-context(body:not(.light-mode)) .select-wrap::after {
+        color: #f8f6f1;
+      }
+
       :host-context(body:not(.light-mode)) select option {
         background: #0d1b2a;
         color: #f8f6f1;
@@ -513,17 +561,33 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         }
 
         .booking-wrap {
+          width: calc(100% - 24px);
           margin-top: -40px;
           padding-bottom: 54px;
         }
 
         .grid {
           grid-template-columns: 1fr;
+          gap: 14px;
         }
 
         .booking-form,
         .summary-body {
           padding: 20px;
+        }
+
+        input,
+        select {
+          height: 70px;
+          min-height: 70px;
+          border-radius: 18px;
+          font-size: 15px;
+        }
+
+        textarea {
+          min-height: 150px;
+          border-radius: 20px;
+          font-size: 15px;
         }
 
         .trip-summary img {
@@ -557,6 +621,10 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         .label::before,
         .form-head span::before {
           width: 22px;
+        }
+
+        .booking-form {
+          padding: 18px;
         }
       }
     `,
