@@ -52,9 +52,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
           <form class="custom-form" (ngSubmit)="submit()">
             <div class="form-head">
-              <span class="section-label dark">{{
-                'CUSTOM_TRIP_PAGE.FORM_LABEL' | translate
-              }}</span>
+              <span class="section-label dark">{{ 'CUSTOM_TRIP_PAGE.FORM_LABEL' | translate }}</span>
               <h2>{{ 'CUSTOM_TRIP_PAGE.FORM_TITLE' | translate }}</h2>
               <p>{{ 'CUSTOM_TRIP_PAGE.FORM_HINT' | translate }}</p>
             </div>
@@ -87,11 +85,23 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [placeholder]="'CUSTOM_TRIP_PAGE.FORM.PHONE' | translate"
               />
 
-              <input
-                [(ngModel)]="form.country"
-                name="country"
-                [placeholder]="'CUSTOM_TRIP_PAGE.FORM.COUNTRY' | translate"
-              />
+              <select [(ngModel)]="form.country" name="country" required>
+                <option value="" disabled>
+                  {{ 'CUSTOM_TRIP_PAGE.FORM.COUNTRY' | translate }}
+                </option>
+
+                @for (country of countries; track country) {
+                  <option [value]="country">{{ country }}</option>
+                }
+              </select>
+
+              <select [(ngModel)]="form.language" name="language" required>
+                <option value="" disabled>Preferred Language</option>
+
+                @for (lang of languages; track lang.value) {
+                  <option [value]="lang.label">{{ lang.label }}</option>
+                }
+              </select>
 
               <input
                 [(ngModel)]="form.budget"
@@ -202,12 +212,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         inset: 0;
         background:
           radial-gradient(circle at 18% 72%, rgba(198, 168, 92, 0.24), transparent 34%),
-          linear-gradient(
-            110deg,
-            rgba(13, 27, 42, 0.98),
-            rgba(13, 27, 42, 0.82),
-            rgba(13, 27, 42, 0.55)
-          );
+          linear-gradient(110deg, rgba(13, 27, 42, 0.98), rgba(13, 27, 42, 0.82), rgba(13, 27, 42, 0.55));
       }
 
       .hero-content {
@@ -271,7 +276,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       .custom-section {
         background:
-          radial-gradient(circle at top left, rgba(198, 168, 92, 0.11), transparent 30%), #f8f6f1;
+          radial-gradient(circle at top left, rgba(198, 168, 92, 0.11), transparent 30%),
+          #f8f6f1;
         padding: 76px 0;
         min-height: 60vh;
       }
@@ -375,7 +381,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       }
 
       input,
-      textarea {
+      textarea,
+      select {
         width: 100%;
         border: 1px solid rgba(198, 168, 92, 0.24);
         border-radius: 16px;
@@ -387,8 +394,14 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         transition: 0.25s ease;
       }
 
+      select {
+        cursor: pointer;
+        appearance: auto;
+      }
+
       input:focus,
-      textarea:focus {
+      textarea:focus,
+      select:focus {
         border-color: #c6a85c;
         box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
       }
@@ -451,7 +464,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       :host-context(body:not(.light-mode)) .custom-section {
         background:
-          radial-gradient(circle at top left, rgba(198, 168, 92, 0.12), transparent 30%), #07111d;
+          radial-gradient(circle at top left, rgba(198, 168, 92, 0.12), transparent 30%),
+          #07111d;
       }
 
       :host-context(body:not(.light-mode)) .info-card,
@@ -478,10 +492,16 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       }
 
       :host-context(body:not(.light-mode)) input,
-      :host-context(body:not(.light-mode)) textarea {
+      :host-context(body:not(.light-mode)) textarea,
+      :host-context(body:not(.light-mode)) select {
         background: rgba(255, 255, 255, 0.07);
         color: #f8f6f1;
         border-color: rgba(198, 168, 92, 0.28);
+      }
+
+      :host-context(body:not(.light-mode)) select option {
+        background: #0d1b2a;
+        color: #f8f6f1;
       }
 
       :host-context(body:not(.light-mode)) input::placeholder,
@@ -552,12 +572,68 @@ export class CustomTripComponent {
   success = false;
   errorMessage = '';
 
+  languages = [
+    { value: 'en', label: 'English' },
+    { value: 'ar', label: 'Arabic' },
+    { value: 'de', label: 'German' },
+    { value: 'fr', label: 'French' },
+    { value: 'it', label: 'Italian' },
+    { value: 'es', label: 'Spanish' },
+  ];
+
+  countries = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Argentina',
+    'Australia',
+    'Austria',
+    'Bahrain',
+    'Belgium',
+    'Brazil',
+    'Canada',
+    'China',
+    'Denmark',
+    'Egypt',
+    'France',
+    'Germany',
+    'Greece',
+    'India',
+    'Indonesia',
+    'Ireland',
+    'Italy',
+    'Japan',
+    'Jordan',
+    'Kuwait',
+    'Lebanon',
+    'Malaysia',
+    'Morocco',
+    'Netherlands',
+    'Norway',
+    'Oman',
+    'Pakistan',
+    'Palestine',
+    'Portugal',
+    'Qatar',
+    'Russia',
+    'Saudi Arabia',
+    'South Africa',
+    'Spain',
+    'Sweden',
+    'Switzerland',
+    'Turkey',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States',
+  ];
+
   form: any = {
     title: '',
     name: '',
     email: '',
     phone: '',
     country: '',
+    language: '',
     departure_date: '',
     arrival_date: '',
     adults: null,
@@ -582,6 +658,7 @@ export class CustomTripComponent {
     const email = String(this.form.email || '').trim();
     const phone = String(this.form.phone || '').trim();
     const country = String(this.form.country || '').trim();
+    const language = String(this.form.language || '').trim();
     const notes = String(this.form.notes || '').trim();
 
     const adults = Number(this.form.adults);
@@ -596,6 +673,7 @@ export class CustomTripComponent {
       !email ||
       !phone ||
       !country ||
+      !language ||
       !this.form.departure_date ||
       !this.form.arrival_date ||
       !adults ||
@@ -610,6 +688,8 @@ export class CustomTripComponent {
     this.submitting = true;
     this.cdr.detectChanges();
 
+    const finalNotes = `Preferred Language: ${language}\n\n${notes}`;
+
     const payload = {
       title,
       name,
@@ -623,7 +703,7 @@ export class CustomTripComponent {
       children_under_6: childrenUnder6,
       children_under_12: childrenUnder12,
       budget,
-      notes,
+      notes: finalNotes,
       status: 'new',
       created_at: new Date().toISOString(),
     };
@@ -646,6 +726,7 @@ export class CustomTripComponent {
       email: '',
       phone: '',
       country: '',
+      language: '',
       departure_date: '',
       arrival_date: '',
       adults: null,

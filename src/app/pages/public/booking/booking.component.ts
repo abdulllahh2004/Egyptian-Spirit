@@ -86,6 +86,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [placeholder]="'BOOKING.FORM.NAME' | translate"
                 required
               />
+
               <input
                 [(ngModel)]="form.email"
                 name="email"
@@ -93,22 +94,35 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [placeholder]="'BOOKING.FORM.EMAIL' | translate"
                 required
               />
+
               <input
                 [(ngModel)]="form.phone"
                 name="phone"
                 [placeholder]="'BOOKING.FORM.PHONE' | translate"
               />
-              <input
-                [(ngModel)]="form.country"
-                name="country"
-                [placeholder]="'BOOKING.FORM.COUNTRY' | translate"
-              />
+
+              <select [(ngModel)]="form.country" name="country" required>
+                <option value="" disabled>
+                  {{ 'BOOKING.FORM.COUNTRY' | translate }}
+                </option>
+
+                @for (country of countries; track country) {
+                  <option [value]="country">{{ country }}</option>
+                }
+              </select>
+
               <input [(ngModel)]="form.travel_date" name="travel_date" type="date" />
-              <input
-                [(ngModel)]="form.language"
-                name="language"
-                [placeholder]="'BOOKING.FORM.LANGUAGE' | translate"
-              />
+
+              <select [(ngModel)]="form.language" name="language" required>
+                <option value="" disabled>
+                  {{ 'BOOKING.FORM.LANGUAGE' | translate }}
+                </option>
+
+                @for (lang of languages; track lang.value) {
+                  <option [value]="lang.label">{{ lang.label }}</option>
+                }
+              </select>
+
               <input
                 [(ngModel)]="form.adults"
                 name="adults"
@@ -116,6 +130,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 min="1"
                 [placeholder]="'BOOKING.FORM.ADULTS' | translate"
               />
+
               <input
                 [(ngModel)]="form.children"
                 name="children"
@@ -346,7 +361,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       }
 
       input,
-      textarea {
+      textarea,
+      select {
         width: 100%;
         border: 1px solid rgba(198, 168, 92, 0.24);
         border-radius: 16px;
@@ -358,8 +374,14 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         transition: 0.25s ease;
       }
 
+      select {
+        cursor: pointer;
+        appearance: auto;
+      }
+
       input:focus,
-      textarea:focus {
+      textarea:focus,
+      select:focus {
         border-color: #c6a85c;
         box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
       }
@@ -454,10 +476,16 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       }
 
       :host-context(body:not(.light-mode)) input,
-      :host-context(body:not(.light-mode)) textarea {
+      :host-context(body:not(.light-mode)) textarea,
+      :host-context(body:not(.light-mode)) select {
         background: rgba(255, 255, 255, 0.07);
         color: #f8f6f1;
         border-color: rgba(198, 168, 92, 0.28);
+      }
+
+      :host-context(body:not(.light-mode)) select option {
+        background: #0d1b2a;
+        color: #f8f6f1;
       }
 
       :host-context(body:not(.light-mode)) input::placeholder,
@@ -543,12 +571,92 @@ export class BookingComponent implements OnInit {
   success = false;
   errorMessage = '';
 
+  languages = [
+    { value: 'en', label: 'English' },
+    { value: 'ar', label: 'Arabic' },
+    { value: 'de', label: 'German' },
+    { value: 'fr', label: 'French' },
+    { value: 'it', label: 'Italian' },
+    { value: 'es', label: 'Spanish' },
+  ];
+
+  countries = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Andorra',
+    'Angola',
+    'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahrain',
+    'Bangladesh',
+    'Belgium',
+    'Brazil',
+    'Bulgaria',
+    'Canada',
+    'China',
+    'Croatia',
+    'Cyprus',
+    'Czech Republic',
+    'Denmark',
+    'Egypt',
+    'Estonia',
+    'Finland',
+    'France',
+    'Georgia',
+    'Germany',
+    'Greece',
+    'Hungary',
+    'India',
+    'Indonesia',
+    'Iraq',
+    'Ireland',
+    'Italy',
+    'Japan',
+    'Jordan',
+    'Kuwait',
+    'Lebanon',
+    'Libya',
+    'Malaysia',
+    'Maldives',
+    'Mexico',
+    'Morocco',
+    'Netherlands',
+    'New Zealand',
+    'Norway',
+    'Oman',
+    'Pakistan',
+    'Palestine',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Saudi Arabia',
+    'South Africa',
+    'South Korea',
+    'Spain',
+    'Sudan',
+    'Sweden',
+    'Switzerland',
+    'Syria',
+    'Thailand',
+    'Tunisia',
+    'Turkey',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States',
+  ];
+
   form: any = {
     name: '',
     email: '',
     phone: '',
     country: '',
-    language: 'English',
+    language: '',
     travel_date: '',
     adults: null,
     children: null,
@@ -586,75 +694,75 @@ export class BookingComponent implements OnInit {
   }
 
   async submit() {
-  this.success = false;
-  this.errorMessage = '';
+    this.success = false;
+    this.errorMessage = '';
 
-  const name = String(this.form.name || '').trim();
-  const email = String(this.form.email || '').trim();
-  const phone = String(this.form.phone || '').trim();
-  const country = String(this.form.country || '').trim();
-  const language = String(this.form.language || '').trim();
-  const adults = Number(this.form.adults);
-  const children = Number(this.form.children || 0);
+    const name = String(this.form.name || '').trim();
+    const email = String(this.form.email || '').trim();
+    const phone = String(this.form.phone || '').trim();
+    const country = String(this.form.country || '').trim();
+    const language = String(this.form.language || '').trim();
+    const adults = Number(this.form.adults);
+    const children = Number(this.form.children || 0);
 
-  if (!name || !email || !phone || !country || !this.form.travel_date || !language || !adults || adults < 1) {
-    this.errorMessage = 'Please fill in all required booking details before sending.';
+    if (!name || !email || !phone || !country || !this.form.travel_date || !language || !adults || adults < 1) {
+      this.errorMessage = 'Please fill in all required booking details before sending.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.submitting = true;
     this.cdr.detectChanges();
-    return;
-  }
 
-  this.submitting = true;
-  this.cdr.detectChanges();
+    const user = await this.supabaseService.getCurrentUser();
 
-  const user = await this.supabaseService.getCurrentUser();
+    if (!user) {
+      this.submitting = false;
+      this.errorMessage = 'Please login first before sending a booking request.';
+      this.cdr.detectChanges();
+      return;
+    }
 
-  if (!user) {
+    const payload = {
+      trip_id: this.trip.id,
+      user_id: user.id,
+      name,
+      email,
+      phone,
+      country,
+      language,
+      travel_date: this.form.travel_date,
+      adults,
+      children,
+      notes: this.form.notes,
+      message: this.form.notes,
+      status: 'pending',
+    };
+
+    const { error } = await this.supabaseService.createBooking(payload);
+
     this.submitting = false;
-    this.errorMessage = 'Please login first before sending a booking request.';
+
+    if (error) {
+      this.errorMessage = 'Something went wrong. Please try again.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.success = true;
+
+    this.form = {
+      name: '',
+      email: '',
+      phone: '',
+      country: '',
+      language: '',
+      travel_date: '',
+      adults: null,
+      children: null,
+      notes: '',
+    };
+
     this.cdr.detectChanges();
-    return;
   }
-
-  const payload = {
-    trip_id: this.trip.id,
-    user_id: user.id,
-    name,
-    email,
-    phone,
-    country,
-    language,
-    travel_date: this.form.travel_date,
-    adults,
-    children,
-    notes: this.form.notes,
-    message: this.form.notes,
-    status: 'pending',
-  };
-
-  const { error } = await this.supabaseService.createBooking(payload);
-
-  this.submitting = false;
-
-  if (error) {
-    this.errorMessage = 'Something went wrong. Please try again.';
-    this.cdr.detectChanges();
-    return;
-  }
-
-  this.success = true;
-
-  this.form = {
-    name: '',
-    email: '',
-    phone: '',
-    country: '',
-    language: 'English',
-    travel_date: '',
-    adults: null,
-    children: null,
-    notes: '',
-  };
-
-  this.cdr.detectChanges();
-}
 }
