@@ -31,7 +31,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
           <div class="info-card">
             <i class="fa-solid fa-phone"></i>
             <span>{{ 'CONTACT_PAGE.PHONE_LABEL' | translate }}</span>
-            <strong>+20 100 000 0000</strong>
+            <strong>+20 1106131756</strong>
           </div>
 
           <div class="info-card">

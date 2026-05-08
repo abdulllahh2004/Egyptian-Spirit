@@ -98,31 +98,26 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [(ngModel)]="form.phone"
                 name="phone"
                 [placeholder]="'BOOKING.FORM.PHONE' | translate"
+                required
               />
 
               <div class="select-wrap">
                 <select [(ngModel)]="form.country" name="country" required>
-                  <option value="" disabled>
-                    {{ 'BOOKING.FORM.COUNTRY' | translate }}
-                  </option>
-
+                  <option value="" disabled>{{ 'BOOKING.FORM.COUNTRY' | translate }}</option>
                   @for (country of countries; track country) {
                     <option [value]="country">{{ country }}</option>
                   }
                 </select>
               </div>
 
-              <div class="date-field">
-                <label>Travel Date</label>
+              <div class="date-wrap">
+                <span>{{ 'BOOKING.FORM.TRAVEL_DATE' | translate }}</span>
                 <input [(ngModel)]="form.travel_date" name="travel_date" type="date" required />
               </div>
 
               <div class="select-wrap">
                 <select [(ngModel)]="form.language" name="language" required>
-                  <option value="" disabled>
-                    {{ 'BOOKING.FORM.LANGUAGE' | translate }}
-                  </option>
-
+                  <option value="" disabled>{{ 'BOOKING.FORM.LANGUAGE' | translate }}</option>
                   @for (lang of languages; track lang.value) {
                     <option [value]="lang.label">{{ lang.label }}</option>
                   }
@@ -363,51 +358,87 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 13px;
+        gap: 14px;
+        align-items: stretch;
       }
 
       input,
       textarea,
       select {
         width: 100%;
-        min-height: 58px;
-        border: 1px solid rgba(198, 168, 92, 0.24);
-        border-radius: 18px;
-        padding: 0 20px;
+        min-height: 64px;
+        border: 1px solid rgba(198, 168, 92, 0.28);
+        border-radius: 20px;
+        padding: 0 22px;
         outline: none;
         font-size: 14px;
         background: #fff;
         color: #0d1b2a;
         transition: 0.25s ease;
+        font-family: inherit;
       }
 
       textarea {
-        padding: 16px 20px;
+        padding: 18px 22px;
         min-height: 125px;
         resize: vertical;
       }
 
       input::placeholder,
       textarea::placeholder {
-        color: rgba(13, 27, 42, 0.42);
+        color: rgba(13, 27, 42, 0.48);
+        opacity: 1;
       }
 
-      .date-field {
-        display: grid;
-        gap: 7px;
+      .date-wrap {
+        position: relative;
+        width: 100%;
+        min-height: 64px;
+        border: 1px solid rgba(198, 168, 92, 0.28);
+        border-radius: 20px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        transition: 0.25s ease;
       }
 
-      .date-field label {
-        color: #6b7280;
-        font-size: 12px;
+      .date-wrap span {
+        position: absolute;
+        left: 22px;
+        top: 10px;
+        color: rgba(13, 27, 42, 0.55);
+        font-size: 11px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 0.6px;
-        padding-inline-start: 4px;
+        letter-spacing: 0.8px;
+        pointer-events: none;
+        z-index: 2;
       }
 
-      .date-field input {
-        height: 58px;
+      .date-wrap input {
+        border: 0;
+        border-radius: 20px;
+        min-height: 62px;
+        height: 62px;
+        padding: 26px 50px 8px 22px;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .date-wrap input:focus {
+        box-shadow: none;
+      }
+
+      .date-wrap:focus-within {
+        border-color: #c6a85c;
+        box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
+      }
+
+      input[type='date']::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.9;
+        width: 18px;
+        height: 18px;
       }
 
       .select-wrap {
@@ -416,24 +447,25 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       }
 
       .select-wrap::after {
-        content: '⌄';
+        content: '';
         position: absolute;
         top: 50%;
-        right: 18px;
-        transform: translateY(-55%);
-        color: #0d1b2a;
-        font-size: 18px;
+        right: 22px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #0d1b2a;
+        border-bottom: 2px solid #0d1b2a;
+        transform: translateY(-65%) rotate(45deg);
         pointer-events: none;
-        line-height: 1;
       }
 
       select {
-        height: 58px;
+        height: 64px;
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
         cursor: pointer;
-        padding-inline-end: 46px;
+        padding-inline-end: 52px;
       }
 
       input:focus,
@@ -498,38 +530,78 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       :host-context(body:not(.light-mode)) .trip-summary,
       :host-context(body:not(.light-mode)) .booking-form {
-        background: rgba(13, 27, 42, 0.93);
-        border-color: rgba(198, 168, 92, 0.32);
+        background: rgba(9, 23, 37, 0.96);
+        border-color: rgba(198, 168, 92, 0.42);
       }
 
       :host-context(body:not(.light-mode)) .summary-body h2,
-      :host-context(body:not(.light-mode)) .form-head h2,
-      :host-context(body:not(.light-mode)) .summary-grid strong {
-        color: #f8f6f1;
+      :host-context(body:not(.light-mode)) .form-head h2 {
+        color: #ffffff;
       }
 
       :host-context(body:not(.light-mode)) .summary-body p,
-      :host-context(body:not(.light-mode)) .form-head p,
-      :host-context(body:not(.light-mode)) .summary-grid span,
-      :host-context(body:not(.light-mode)) .date-field label {
+      :host-context(body:not(.light-mode)) .form-head p {
+        color: rgba(248, 246, 241, 0.78);
+      }
+
+      :host-context(body:not(.light-mode)) .summary-grid div {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(198, 168, 92, 0.35);
+      }
+
+      :host-context(body:not(.light-mode)) .summary-grid span {
         color: #ead7b5;
+      }
+
+      :host-context(body:not(.light-mode)) .summary-grid strong {
+        color: #ffffff;
       }
 
       :host-context(body:not(.light-mode)) input,
       :host-context(body:not(.light-mode)) textarea,
-      :host-context(body:not(.light-mode)) select {
-        background: rgba(255, 255, 255, 0.07);
-        color: #f8f6f1;
-        border-color: rgba(198, 168, 92, 0.28);
+      :host-context(body:not(.light-mode)) select,
+      :host-context(body:not(.light-mode)) .date-wrap {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-color: rgba(198, 168, 92, 0.38);
+      }
+
+      :host-context(body:not(.light-mode)) input::placeholder,
+      :host-context(body:not(.light-mode)) textarea::placeholder {
+        color: rgba(255, 255, 255, 0.68);
+        opacity: 1;
+      }
+
+      :host-context(body:not(.light-mode)) .date-wrap input {
+        background: transparent;
+        border: 0;
+        color: #ffffff;
+      }
+
+      :host-context(body:not(.light-mode)) .date-wrap span {
+        color: #ead7b5;
       }
 
       :host-context(body:not(.light-mode)) .select-wrap::after {
-        color: #f8f6f1;
+        border-color: #ffffff;
       }
 
       :host-context(body:not(.light-mode)) select option {
         background: #0d1b2a;
-        color: #f8f6f1;
+        color: #ffffff;
+      }
+
+      :host-context(body:not(.light-mode)) input[type='date']::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 1;
+      }
+
+      :host-context(body:not(.light-mode)) input:focus,
+      :host-context(body:not(.light-mode)) textarea:focus,
+      :host-context(body:not(.light-mode)) select:focus,
+      :host-context(body:not(.light-mode)) .date-wrap:focus-within {
+        border-color: #ead7b5;
+        box-shadow: 0 0 0 4px rgba(234, 215, 181, 0.16);
       }
 
       @media (max-width: 992px) {
@@ -563,11 +635,17 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
         input,
         select,
-        .date-field input {
-          height: 70px;
+        .date-wrap {
           min-height: 70px;
-          border-radius: 18px;
+          height: 70px;
+          border-radius: 20px;
           font-size: 15px;
+        }
+
+        .date-wrap input {
+          min-height: 68px;
+          height: 68px;
+          border-radius: 20px;
         }
 
         textarea {
@@ -745,7 +823,16 @@ export class BookingComponent implements OnInit {
     const adults = Number(this.form.adults);
     const children = Number(this.form.children || 0);
 
-    if (!name || !email || !phone || !country || !this.form.travel_date || !language || !adults || adults < 1) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !country ||
+      !this.form.travel_date ||
+      !language ||
+      !adults ||
+      adults < 1
+    ) {
       this.errorMessage = 'Please fill in all required booking details before sending.';
       this.cdr.detectChanges();
       return;

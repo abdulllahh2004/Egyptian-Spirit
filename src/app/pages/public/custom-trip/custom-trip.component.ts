@@ -62,6 +62,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [(ngModel)]="form.title"
                 name="title"
                 [placeholder]="'CUSTOM_TRIP_PAGE.FORM.TRIP_TITLE' | translate"
+                required
               />
 
               <input
@@ -83,25 +84,32 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [(ngModel)]="form.phone"
                 name="phone"
                 [placeholder]="'CUSTOM_TRIP_PAGE.FORM.PHONE' | translate"
+                required
               />
 
-              <select [(ngModel)]="form.country" name="country" required>
-                <option value="" disabled>
-                  {{ 'CUSTOM_TRIP_PAGE.FORM.COUNTRY' | translate }}
-                </option>
+              <div class="select-wrap">
+                <select [(ngModel)]="form.country" name="country" required>
+                  <option value="" disabled>
+                    {{ 'CUSTOM_TRIP_PAGE.FORM.COUNTRY' | translate }}
+                  </option>
 
-                @for (country of countries; track country) {
-                  <option [value]="country">{{ country }}</option>
-                }
-              </select>
+                  @for (country of countries; track country) {
+                    <option [value]="country">{{ country }}</option>
+                  }
+                </select>
+              </div>
 
-              <select [(ngModel)]="form.language" name="language" required>
-                <option value="" disabled>Preferred Language</option>
+              <div class="select-wrap">
+                <select [(ngModel)]="form.language" name="language" required>
+                  <option value="" disabled>
+                    {{ 'CUSTOM_TRIP_PAGE.FORM.LANGUAGE' | translate }}
+                  </option>
 
-                @for (lang of languages; track lang.value) {
-                  <option [value]="lang.label">{{ lang.label }}</option>
-                }
-              </select>
+                  @for (lang of languages; track lang.value) {
+                    <option [value]="lang.label">{{ lang.label }}</option>
+                  }
+                </select>
+              </div>
 
               <input
                 [(ngModel)]="form.budget"
@@ -111,28 +119,28 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 [placeholder]="'CUSTOM_TRIP_PAGE.FORM.BUDGET' | translate"
               />
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.DEPARTURE' | translate }}</label>
-                <input [(ngModel)]="form.departure_date" name="departure_date" type="date" />
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.DEPARTURE' | translate }}</span>
+                <input [(ngModel)]="form.departure_date" name="departure_date" type="date" required />
               </div>
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.ARRIVAL' | translate }}</label>
-                <input [(ngModel)]="form.arrival_date" name="arrival_date" type="date" />
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.ARRIVAL' | translate }}</span>
+                <input [(ngModel)]="form.arrival_date" name="arrival_date" type="date" required />
               </div>
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.ADULTS' | translate }}</label>
-                <input [(ngModel)]="form.adults" name="adults" type="number" min="1" />
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.ADULTS' | translate }}</span>
+                <input [(ngModel)]="form.adults" name="adults" type="number" min="1" required />
               </div>
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.INFANTS' | translate }}</label>
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.INFANTS' | translate }}</span>
                 <input [(ngModel)]="form.infants" name="infants" type="number" min="0" />
               </div>
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.CHILDREN_UNDER_6' | translate }}</label>
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.CHILDREN_UNDER_6' | translate }}</span>
                 <input
                   [(ngModel)]="form.children_under_6"
                   name="children_under_6"
@@ -141,8 +149,8 @@ import { SupabaseService } from '../../../core/services/supabase.service';
                 />
               </div>
 
-              <div class="field">
-                <label>{{ 'CUSTOM_TRIP_PAGE.FORM.CHILDREN_UNDER_12' | translate }}</label>
+              <div class="float-field">
+                <span>{{ 'CUSTOM_TRIP_PAGE.FORM.CHILDREN_UNDER_12' | translate }}</span>
                 <input
                   [(ngModel)]="form.children_under_12"
                   name="children_under_12"
@@ -156,6 +164,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
               [(ngModel)]="form.notes"
               name="notes"
               [placeholder]="'CUSTOM_TRIP_PAGE.FORM.NOTES' | translate"
+              required
             ></textarea>
 
             @if (success) {
@@ -212,7 +221,12 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         inset: 0;
         background:
           radial-gradient(circle at 18% 72%, rgba(198, 168, 92, 0.24), transparent 34%),
-          linear-gradient(110deg, rgba(13, 27, 42, 0.98), rgba(13, 27, 42, 0.82), rgba(13, 27, 42, 0.55));
+          linear-gradient(
+            110deg,
+            rgba(13, 27, 42, 0.98),
+            rgba(13, 27, 42, 0.82),
+            rgba(13, 27, 42, 0.55)
+          );
       }
 
       .hero-content {
@@ -363,40 +377,115 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 14px;
-      }
-
-      .field {
-        display: grid;
-        gap: 7px;
-      }
-
-      .field label {
-        color: #6b7280;
-        font-size: 12px;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        align-items: stretch;
       }
 
       input,
       textarea,
       select {
         width: 100%;
-        border: 1px solid rgba(198, 168, 92, 0.24);
-        border-radius: 16px;
-        padding: 14px 16px;
+        min-height: 64px;
+        border: 1px solid rgba(198, 168, 92, 0.28);
+        border-radius: 20px;
+        padding: 0 22px;
         outline: none;
         font-size: 14px;
         background: #fff;
         color: #0d1b2a;
         transition: 0.25s ease;
+        font-family: inherit;
+      }
+
+      textarea {
+        padding: 18px 22px;
+        min-height: 135px;
+        resize: vertical;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: rgba(13, 27, 42, 0.48);
+        opacity: 1;
+      }
+
+      .select-wrap {
+        position: relative;
+        width: 100%;
+      }
+
+      .select-wrap::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 22px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #0d1b2a;
+        border-bottom: 2px solid #0d1b2a;
+        transform: translateY(-65%) rotate(45deg);
+        pointer-events: none;
       }
 
       select {
+        height: 64px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
         cursor: pointer;
-        appearance: auto;
+        padding-inline-end: 52px;
+      }
+
+      .float-field {
+        position: relative;
+        width: 100%;
+        min-height: 64px;
+        border: 1px solid rgba(198, 168, 92, 0.28);
+        border-radius: 20px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        transition: 0.25s ease;
+      }
+
+      .float-field span {
+        position: absolute;
+        left: 22px;
+        top: 10px;
+        color: rgba(13, 27, 42, 0.55);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .float-field input {
+        border: 0;
+        border-radius: 20px;
+        min-height: 62px;
+        height: 62px;
+        padding: 26px 50px 8px 22px;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .float-field input:focus {
+        box-shadow: none;
+      }
+
+      .float-field:focus-within {
+        border-color: #c6a85c;
+        box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
+      }
+
+      input[type='date']::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.9;
+        width: 18px;
+        height: 18px;
       }
 
       input:focus,
@@ -404,11 +493,6 @@ import { SupabaseService } from '../../../core/services/supabase.service';
       select:focus {
         border-color: #c6a85c;
         box-shadow: 0 0 0 4px rgba(198, 168, 92, 0.16);
-      }
-
-      textarea {
-        min-height: 135px;
-        resize: vertical;
       }
 
       button {
@@ -458,6 +542,25 @@ import { SupabaseService } from '../../../core/services/supabase.service';
         transform: translateX(4px);
       }
 
+      :host-context([dir='rtl']) .select-wrap::after {
+        right: auto;
+        left: 22px;
+      }
+
+      :host-context([dir='rtl']) select {
+        padding-inline-end: 22px;
+        padding-inline-start: 52px;
+      }
+
+      :host-context([dir='rtl']) .float-field span {
+        left: auto;
+        right: 22px;
+      }
+
+      :host-context([dir='rtl']) .float-field input {
+        padding: 26px 22px 8px 50px;
+      }
+
       :host-context(body:not(.light-mode)) {
         background: #07111d;
       }
@@ -470,43 +573,72 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       :host-context(body:not(.light-mode)) .info-card,
       :host-context(body:not(.light-mode)) .custom-form {
-        background: rgba(13, 27, 42, 0.93);
-        border-color: rgba(198, 168, 92, 0.32);
+        background: rgba(9, 23, 37, 0.96);
+        border-color: rgba(198, 168, 92, 0.42);
       }
 
       :host-context(body:not(.light-mode)) .info-card h2,
       :host-context(body:not(.light-mode)) .custom-form h2,
       :host-context(body:not(.light-mode)) .steps span {
-        color: #f8f6f1;
+        color: #ffffff;
       }
 
       :host-context(body:not(.light-mode)) .info-card p,
-      :host-context(body:not(.light-mode)) .form-head p,
-      :host-context(body:not(.light-mode)) .field label {
+      :host-context(body:not(.light-mode)) .form-head p {
+        color: rgba(248, 246, 241, 0.78);
+      }
+
+      :host-context(body:not(.light-mode)) .section-label.dark,
+      :host-context(body:not(.light-mode)) .float-field span {
         color: #ead7b5;
       }
 
       :host-context(body:not(.light-mode)) .steps div {
-        background: rgba(255, 255, 255, 0.055);
-        border-color: rgba(198, 168, 92, 0.26);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(198, 168, 92, 0.35);
       }
 
       :host-context(body:not(.light-mode)) input,
       :host-context(body:not(.light-mode)) textarea,
-      :host-context(body:not(.light-mode)) select {
-        background: rgba(255, 255, 255, 0.07);
-        color: #f8f6f1;
-        border-color: rgba(198, 168, 92, 0.28);
+      :host-context(body:not(.light-mode)) select,
+      :host-context(body:not(.light-mode)) .float-field {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-color: rgba(198, 168, 92, 0.38);
       }
 
-      :host-context(body:not(.light-mode)) select option {
-        background: #0d1b2a;
-        color: #f8f6f1;
+      :host-context(body:not(.light-mode)) .float-field input {
+        background: transparent;
+        border: 0;
+        color: #ffffff;
       }
 
       :host-context(body:not(.light-mode)) input::placeholder,
       :host-context(body:not(.light-mode)) textarea::placeholder {
-        color: rgba(248, 246, 241, 0.5);
+        color: rgba(255, 255, 255, 0.68);
+        opacity: 1;
+      }
+
+      :host-context(body:not(.light-mode)) .select-wrap::after {
+        border-color: #ffffff;
+      }
+
+      :host-context(body:not(.light-mode)) select option {
+        background: #0d1b2a;
+        color: #ffffff;
+      }
+
+      :host-context(body:not(.light-mode)) input[type='date']::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 1;
+      }
+
+      :host-context(body:not(.light-mode)) input:focus,
+      :host-context(body:not(.light-mode)) textarea:focus,
+      :host-context(body:not(.light-mode)) select:focus,
+      :host-context(body:not(.light-mode)) .float-field:focus-within {
+        border-color: #ead7b5;
+        box-shadow: 0 0 0 4px rgba(234, 215, 181, 0.16);
       }
 
       @media (max-width: 992px) {
@@ -547,6 +679,28 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
         .grid {
           grid-template-columns: 1fr;
+          gap: 14px;
+        }
+
+        input,
+        select,
+        .float-field {
+          min-height: 70px;
+          height: 70px;
+          border-radius: 20px;
+          font-size: 15px;
+        }
+
+        .float-field input {
+          min-height: 68px;
+          height: 68px;
+          border-radius: 20px;
+        }
+
+        textarea {
+          min-height: 150px;
+          border-radius: 20px;
+          font-size: 15px;
         }
 
         button {

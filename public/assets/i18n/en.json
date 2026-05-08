@@ -183,7 +183,8 @@
       "LANGUAGE": "Preferred Language",
       "ADULTS": "Adults",
       "CHILDREN": "Children",
-      "NOTES": "Notes or special requests"
+      "NOTES": "Notes or special requests",
+      "TRAVEL_DATE": "Travel Date"
     }
   },
   "TRIPS_PAGE": {
@@ -274,7 +275,8 @@
       "INFANTS": "Infants",
       "CHILDREN_UNDER_6": "Children under 6",
       "CHILDREN_UNDER_12": "Children under 12",
-      "NOTES": "Tell us about your interests, preferred cities, hotel style, or any special requests"
+      "NOTES": "Tell us about your interests, preferred cities, hotel style, or any special requests",
+      "LANGUAGE": "Preferred Language"
     },
     "SUCCESS": "Your custom trip request has been sent successfully. Our team will contact you soon.",
     "SENDING": "Sending...",
