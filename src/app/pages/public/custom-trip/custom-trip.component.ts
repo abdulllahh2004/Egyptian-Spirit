@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import emailjs from '@emailjs/browser';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
@@ -52,7 +53,9 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
           <form class="custom-form" (ngSubmit)="submit()">
             <div class="form-head">
-              <span class="section-label dark">{{ 'CUSTOM_TRIP_PAGE.FORM_LABEL' | translate }}</span>
+              <span class="section-label dark">{{
+                'CUSTOM_TRIP_PAGE.FORM_LABEL' | translate
+              }}</span>
               <h2>{{ 'CUSTOM_TRIP_PAGE.FORM_TITLE' | translate }}</h2>
               <p>{{ 'CUSTOM_TRIP_PAGE.FORM_HINT' | translate }}</p>
             </div>
@@ -121,7 +124,12 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
               <div class="float-field">
                 <span>{{ 'CUSTOM_TRIP_PAGE.FORM.DEPARTURE' | translate }}</span>
-                <input [(ngModel)]="form.departure_date" name="departure_date" type="date" required />
+                <input
+                  [(ngModel)]="form.departure_date"
+                  name="departure_date"
+                  type="date"
+                  required
+                />
               </div>
 
               <div class="float-field">
@@ -290,8 +298,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       .custom-section {
         background:
-          radial-gradient(circle at top left, rgba(198, 168, 92, 0.11), transparent 30%),
-          #f8f6f1;
+          radial-gradient(circle at top left, rgba(198, 168, 92, 0.11), transparent 30%), #f8f6f1;
         padding: 76px 0;
         min-height: 60vh;
       }
@@ -567,8 +574,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 
       :host-context(body:not(.light-mode)) .custom-section {
         background:
-          radial-gradient(circle at top left, rgba(198, 168, 92, 0.12), transparent 30%),
-          #07111d;
+          radial-gradient(circle at top left, rgba(198, 168, 92, 0.12), transparent 30%), #07111d;
       }
 
       :host-context(body:not(.light-mode)) .info-card,
@@ -722,6 +728,11 @@ import { SupabaseService } from '../../../core/services/supabase.service';
   ],
 })
 export class CustomTripComponent {
+  private readonly emailServiceId = 'service_44bbm9j';
+  private readonly emailTemplateId = 'template_v1sdo7e';
+  private readonly emailAutoReplyTemplateId = 'template_tb74gce';
+  private readonly emailPublicKey = 'Ohp9nMDge6LD-6Nm6';
+
   submitting = false;
   success = false;
   errorMessage = '';
@@ -803,6 +814,62 @@ export class CustomTripComponent {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  private async sendCustomTripEmail(payload: any, selectedLanguage: string) {
+    const totalGuests =
+      Number(payload.adults || 0) +
+      Number(payload.infants || 0) +
+      Number(payload.children_under_6 || 0) +
+      Number(payload.children_under_12 || 0);
+
+    const templateParams = {
+      request_type: 'Custom Trip Request',
+      user_name: payload.name,
+      user_email: payload.email,
+      phone: payload.phone,
+      trip_name: payload.title || 'Custom Trip',
+      travel_date: `${payload.departure_date} → ${payload.arrival_date}`,
+      guests: totalGuests,
+      message: `
+Country: ${payload.country}
+
+Preferred Language: ${selectedLanguage}
+
+Adults: ${payload.adults}
+Infants: ${payload.infants}
+Children Under 6: ${payload.children_under_6}
+Children Under 12: ${payload.children_under_12}
+
+Budget: ${payload.budget ? `$${payload.budget}` : '-'}
+
+Notes:
+${payload.notes || '-'}
+      `,
+    };
+
+    return emailjs.send(
+      this.emailServiceId,
+      this.emailTemplateId,
+      templateParams,
+      this.emailPublicKey,
+    );
+  }
+
+  private async sendCustomTripAutoReply(payload: any) {
+    const templateParams = {
+      request_type: 'Custom Trip Request',
+      user_name: payload.name,
+      user_email: payload.email,
+      trip_name: payload.title || 'Custom Trip',
+    };
+
+    return emailjs.send(
+      this.emailServiceId,
+      this.emailAutoReplyTemplateId,
+      templateParams,
+      this.emailPublicKey,
+    );
+  }
+
   async submit() {
     this.success = false;
     this.errorMessage = '';
@@ -864,14 +931,25 @@ export class CustomTripComponent {
 
     const { error } = await this.supabaseService.insertCustomTrip(payload);
 
-    this.submitting = false;
-
     if (error) {
+      this.submitting = false;
       this.errorMessage = error.message;
       this.cdr.detectChanges();
       return;
     }
 
+    try {
+      await this.sendCustomTripEmail(payload, language);
+      await this.sendCustomTripAutoReply(payload);
+    } catch (emailError) {
+      console.error('EmailJS error:', emailError);
+      this.submitting = false;
+      this.errorMessage = 'Custom trip saved, but one of the email notifications was not sent.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.submitting = false;
     this.success = true;
 
     this.form = {

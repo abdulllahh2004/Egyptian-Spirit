@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import emailjs from '@emailjs/browser';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
@@ -681,6 +682,11 @@ import { SupabaseService } from '../../../core/services/supabase.service';
   ],
 })
 export class BookingComponent implements OnInit {
+  private readonly emailServiceId = 'service_44bbm9j';
+  private readonly emailTemplateId = 'template_v1sdo7e';
+  private readonly emailAutoReplyTemplateId = 'template_tb74gce';
+  private readonly emailPublicKey = 'Ohp9nMDge6LD-6Nm6';
+
   trip: any = null;
   loading = true;
   notFound = false;
@@ -811,6 +817,50 @@ export class BookingComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  private async sendBookingEmail(payload: any) {
+    const totalGuests = Number(payload.adults || 0) + Number(payload.children || 0);
+
+    const templateParams = {
+      request_type: 'Booking Request',
+      user_name: payload.name,
+      user_email: payload.email,
+      phone: payload.phone,
+      trip_name: this.trip?.title || 'Booking',
+      travel_date: payload.travel_date,
+      guests: totalGuests,
+      message: `
+Country: ${payload.country}
+Preferred Language: ${payload.language}
+Adults: ${payload.adults}
+Children: ${payload.children}
+Notes: ${payload.notes || '-'}
+      `,
+    };
+
+    return emailjs.send(
+      this.emailServiceId,
+      this.emailTemplateId,
+      templateParams,
+      this.emailPublicKey,
+    );
+  }
+
+  private async sendBookingAutoReply(payload: any) {
+    const templateParams = {
+      request_type: 'Booking Request',
+      user_name: payload.name,
+      user_email: payload.email,
+      trip_name: this.trip?.title || 'Booking',
+    };
+
+    return emailjs.send(
+      this.emailServiceId,
+      this.emailAutoReplyTemplateId,
+      templateParams,
+      this.emailPublicKey,
+    );
+  }
+
   async submit() {
     this.success = false;
     this.errorMessage = '';
@@ -822,6 +872,7 @@ export class BookingComponent implements OnInit {
     const language = String(this.form.language || '').trim();
     const adults = Number(this.form.adults);
     const children = Number(this.form.children || 0);
+    const notes = String(this.form.notes || '').trim();
 
     if (
       !name ||
@@ -861,21 +912,33 @@ export class BookingComponent implements OnInit {
       travel_date: this.form.travel_date,
       adults,
       children,
-      notes: this.form.notes,
-      message: this.form.notes,
+      notes,
+      message: notes,
       status: 'pending',
     };
 
     const { error } = await this.supabaseService.createBooking(payload);
 
-    this.submitting = false;
-
     if (error) {
+      this.submitting = false;
       this.errorMessage = 'Something went wrong. Please try again.';
       this.cdr.detectChanges();
       return;
     }
 
+    try {
+      await this.sendBookingEmail(payload);
+      await this.sendBookingAutoReply(payload);
+    } catch (emailError) {
+      console.error('EmailJS error:', emailError);
+      this.submitting = false;
+      this.errorMessage =
+        'Booking saved, but one of the email notifications was not sent. Please check EmailJS.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.submitting = false;
     this.success = true;
 
     this.form = {

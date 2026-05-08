@@ -65,7 +65,7 @@ import { TranslateModule } from '@ngx-translate/core';
             <h5>{{ 'FOOTER.CONTACT' | translate }}</h5>
 
             <div class="contact-box">
-              <p><i class="fa-solid fa-envelope"></i> <span>info&#64;egyptianspirit.com</span></p>
+              <p><i class="fa-solid fa-envelope"></i> <span>egyptianspiritbooking&#64;gmail.com</span></p>
               <p><i class="fa-solid fa-phone"></i> <span>+20 1106131756</span></p>
               <p>
                 <i class="fa-solid fa-location-dot"></i>
